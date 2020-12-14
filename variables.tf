@@ -55,7 +55,7 @@ default     =  1
 variable "vm-name-prefix" {
 type = string
 description = "Name of VM prefix"
-default     =  "playtftest"
+default     = "DCcompany"
 }
 variable "vm-datastore" {
 type = string
@@ -95,5 +95,5 @@ description = "The template to clone to create the VM"
 variable "vm-domain" {
 type = string
 description = "Linux virtual machine domain name for the machine. This, along with host_name, make up the FQDN of the virtual machine"
-default = ""
+default = "groep13.local"
 }
