@@ -61,6 +61,10 @@ variable "vm-datastore" {
 type = string
 description = "Datastore used for the vSphere virtual machines"
 }
+variable "vm-datastore1" {
+type = string
+description = "Datastore used for the vSphere virtual machines"
+}
 variable "vm-network" {
 type = string
 description = "Network used for the vSphere virtual machines"
@@ -73,27 +77,31 @@ default = "false"
 variable "vm-cpu" {
 type = string
 description = "Number of vCPU for the vSphere virtual machines"
-default = "2"
+default = "1"
 }
 variable "vm-ram" {
 type = string
 description = "Amount of RAM for the vSphere virtual machines (example: 2048)"
 default = "2048"
 }
-variable "vm-name" {
-type = string
-description = "The name of the vSphere virtual machines and the hostname of the machine"
-}
+# variable "vm-name" {
+# type = string
+# description = "The name of the vSphere virtual machines and the hostname of the machine"
+# }
 variable "vm-guest-id" {
 type = string
 description = "The ID of virtual machines operating system"
 }
-variable "vm-template-name" {
-type = string
-description = "The template to clone to create the VM"
-}
+# variable "vm-template-name" {
+# type = string
+# description = "The template to clone to create the VM"
+# }
 variable "vm-domain" {
 type = string
 description = "Linux virtual machine domain name for the machine. This, along with host_name, make up the FQDN of the virtual machine"
 default = "groep13.local"
+}
+variable "iso-path" {
+type = string
+description = "Path to the .iso file"
 }

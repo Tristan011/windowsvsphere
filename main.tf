@@ -28,11 +28,18 @@ data "vsphere_resource_pool" "pool" {
     datacenter_id = data.vsphere_datacenter.dc.id
 }
 */
+
+# iSCSI 1
+data "vsphere_datastore" "datastore1" {
+    name = var.vm-datastore1
+    datacenter_id = data.vsphere_datacenter.dc.id
+}
+
+# iSCSI 2
 data "vsphere_datastore" "datastore" {
     name = var.vm-datastore
     datacenter_id = data.vsphere_datacenter.dc.id
 }
-
 
 data "vsphere_network" "network" {
     name = var.vm-network
@@ -54,11 +61,16 @@ data "vsphere_compute_cluster" "cluster" {
   datacenter_id = data.vsphere_datacenter.dc.id
 }
 
-resource "vsphere_resource_pool" "resource_pool" {
-  name                    = "clustergrp13/Resources"
-  parent_resource_pool_id = data.vsphere_compute_cluster.cluster.resource_pool_id
-  #datacenter_id = data.vsphere_datacenter.dc.id
+data "vsphere_resource_pool" "pool" {
+  name = "resource_pool_grp13"
+  datacenter_id = data.vsphere_datacenter.dc.id
 }
+
+# resource "vsphere_resource_pool" "resource_pool" {
+#   name = data.vsphere_resource_pool.pool.name
+#   parent_resource_pool_id = data.vsphere_compute_cluster.cluster.resource_pool_id
+#   #datacenter_id = data.vsphere_datacenter.dc.id
+# }
 /*
 data "vsphere_virtual_machine" "template" {
   name          = "ubuntu-16.04"
@@ -72,30 +84,34 @@ datacenter_id = data.vsphere_datacenter.dc.id
 }
 */
 
+#------------
 # Create VMs
+#------------
 resource "vsphere_virtual_machine" "vm" {
   count = var.vm-count
   name = "${var.vm-name-prefix}-${count.index + 1}_1"
   datastore_id = data.vsphere_datastore.datastore.id
-  resource_pool_id = data.vsphere_resource_pool.resource_pool.parent_resource_pool_id
-  #resource_pool_id = data.vsphere_compute_cluster.parent_resource_pool_id
+  resource_pool_id = data.vsphere_resource_pool.pool.id
+  #resource_pool_id = data.vsphere_compute_cluster.cluster.id
 
   num_cpus = var.vm-cpu
   memory = var.vm-ram
   guest_id = var.vm-guest-id
+  scsi_type = "lsilogic-sas"  # (LSI Logic SAS) https://registry.terraform.io/providers/hashicorp/vsphere/latest/docs/resources/virtual_machine#scsi_type
   
   network_interface {
     network_id = data.vsphere_network.network.id
+    adapter_type = "e1000e" # standard VMXNET3 werkt niet
   }
   disk {
-    label = "disk-${count.index + 1}"
+    label = "disk-${count.index}"
     size  = 100
     thin_provisioned = true #data.vsphere_virtual_machine.template.disks.0.thin_provisioned
   }
 
   cdrom {
     datastore_id = data.vsphere_datastore.datastore.id
-    path         = "ISO/en_windows_server_2019_x64_dvd_199664ce.iso"
+    path         = var.iso-path #"ISO/en_windows_server_2019_x64_dvd_199664ce.iso"
   }
   # clone {
   #   template_uuid = data.vsphere_content_library_item.item.id
