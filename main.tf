@@ -23,7 +23,7 @@ data "vsphere_datacenter" "dc" {
 data "vsphere_folder" "folder" {
   path = var.vsphere-folder
 }
-data "vsphere_resource_pool" "pool" {                             
+data "vsphere_resource_pool" "pool" {
     name          = var.vsphere-resource-pool
     datacenter_id = data.vsphere_datacenter.dc.id
 }
@@ -98,7 +98,7 @@ resource "vsphere_virtual_machine" "vm" {
   memory = var.vm-ram
   guest_id = var.vm-guest-id
   scsi_type = "lsilogic-sas"  # (LSI Logic SAS) https://registry.terraform.io/providers/hashicorp/vsphere/latest/docs/resources/virtual_machine#scsi_type
-  
+
   network_interface {
     network_id = data.vsphere_network.network.id
     adapter_type = "e1000e" # standard VMXNET3 werkt niet
@@ -117,15 +117,27 @@ resource "vsphere_virtual_machine" "vm" {
   #   template_uuid = data.vsphere_content_library_item.item.id
   #   customize {
   #     timeout = 0
-    
+
   #     linux_options {
   #       host_name = "node-${count.index + 1}"
   #       domain = var.vm-domain
   #     }
-    
+
   #     network_interface {}
   #   }
   # }
+
+  provisioner "remote-exec" {
+    connection {
+      type     = "winrm"
+      user     = "Administrator"
+      password = "${var.admin-password}"
+    }
+
+inline = [
+         "powershell -ExecutionPolicy Unrestricted -File \\AfterInstall.ps1 -count ${count.index + 1}"
+        ]
+      }
 }
 
 #Virtual Machine Resource
@@ -149,4 +161,3 @@ resource "vsphere_virtual_machine" "vm" {
   }
 }
 */
-

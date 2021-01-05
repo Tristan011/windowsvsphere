@@ -1,6 +1,11 @@
 # https://medium.com/@gmusumeci/deploying-vmware-vsphere-virtual-machines-with-packer-terraform-d0211f72b7f5
 # https://www.altaro.com/vmware/install-terraform-vsphere/
 
+variable "admin-password" {
+type = string
+description = "windows admin password"
+}
+
 #===========================#
 # VMware vCenter connection #
 #===========================#
